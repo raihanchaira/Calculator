@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupAll()
-
     }
 
     private fun setupAll(){
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnComa.setOnClickListener {
-            appendDigitOnScreen(",")
+            appendDigitOnScreen(".")
             binding.tvResult.text = "0"
         }
     }
