@@ -2,6 +2,7 @@ package com.example.calculator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import com.example.calculator.databinding.ActivityMainBinding
 import com.example.calculator.helper.MathOperation
@@ -12,7 +13,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     //variable setup
-    var digitOnScreen = StringBuilder()
+    var currentInput = StringBuilder()
     var operator = ' '
     var leftSide : Double = 0.0
     var rightSide : Double = 0.0
@@ -25,71 +26,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupAll(){
-        buttonSetup()
+        setupNUmericalButton()
         operationalButton()
         functionalButton()
     }
 
-    private fun buttonSetup(){
-        binding.btnOne.setOnClickListener {
-            appendDigitOnScreen("1")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnTwo.setOnClickListener {
-            appendDigitOnScreen("2")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnThree.setOnClickListener {
-            appendDigitOnScreen("3")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnFour.setOnClickListener {
-            appendDigitOnScreen("4")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnFive.setOnClickListener {
-            appendDigitOnScreen("5")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnSix.setOnClickListener {
-            appendDigitOnScreen("6")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnSeven.setOnClickListener {
-            appendDigitOnScreen("7")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnEight.setOnClickListener {
-            appendDigitOnScreen("8")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnNine.setOnClickListener {
-            appendDigitOnScreen("9")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnZero.setOnClickListener {
-            appendDigitOnScreen("0")
-            binding.tvResult.text = "0"
-        }
-
-        binding.btnComa.setOnClickListener {
-            appendDigitOnScreen(".")
-            binding.tvResult.text = "0"
-        }
+    private fun appendToCurrentInput(digit : String){
+        currentInput.append(digit)
     }
 
-    private fun appendDigitOnScreen(digit : String){
-        var result = digitOnScreen.append(digit)
-        binding.tvOperation.text = result.toString()
+    private fun updateOperationView(){
+        binding.tvOperation.text = currentInput.toString()
+    }
+
+    private fun setupNUmericalButton(){
+        var numericalButton = listOf(
+            binding.btnZero, binding.btnOne, binding.btnTwo, binding.btnThree,
+            binding.btnFour, binding.btnFive, binding.btnSix, binding.btnSeven,
+            binding.btnEight, binding.btnNine, binding.btnComa)
+
+        numericalButton.forEach{ button ->
+            button.setOnClickListener {
+                appendToCurrentInput(button.text.toString())
+                updateOperationView()
+            }
+        }
     }
 
     private fun functionalButton(){
@@ -98,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnClearAll.setOnClickListener {
-            digitOnScreen.clear()
+            currentInput.clear()
             binding.tvOperation.text = ""
             binding.tvResult.text = ""
         }
@@ -106,74 +67,69 @@ class MainActivity : AppCompatActivity() {
         binding.btnEqual.setOnClickListener {
             mainOperation()
         }
-
-
     }
 
     private fun clearPerDigit(){
-        var length = digitOnScreen.length
+        var length = currentInput.length
 
         if (length <= 0){
             Toast.makeText(this, "no digit", Toast.LENGTH_SHORT).show()
         }else{
-            digitOnScreen.deleteCharAt(length - 1)
-            binding.tvOperation.text = digitOnScreen.toString()
+            currentInput.deleteCharAt(length - 1)
+            binding.tvOperation.text = currentInput.toString()
         }
     }
 
     private fun selectOperation(sign : Char){
         operator = sign
-        leftSide = digitOnScreen.toString().toDouble()
-        digitOnScreen.clear()
+        leftSide = currentInput.toString().toDouble()
+        currentInput.clear()
         binding.tvResult.text = "0"
     }
 
     private fun operationalButton(){
-        binding.btnPlus.setOnClickListener {
-             selectOperation('A')
-        }
 
-        binding.btnMinus.setOnClickListener {
-             selectOperation('B')
-        }
+        var mapOfOperator = mapOf<Button, Char>(
+            binding.btnPlus to '+',
+            binding.btnMinus to '-',
+            binding.btnMultiple to '*',
+            binding.btnDivided to '*'
+        )
 
-        binding.btnMultiple.setOnClickListener {
-             selectOperation('C')
+        mapOfOperator.forEach{ (button, to) ->
+            button.setOnClickListener{
+                selectOperation(to)
+            }
         }
-
-        binding.btnDivided.setOnClickListener {
-             selectOperation('D')
-        }
-
     }
 
     private fun mainOperation(){
-        rightSide = digitOnScreen.toString().toDouble()
-        digitOnScreen.clear()
+        rightSide = currentInput.toString().toDouble()
+        currentInput.clear()
 
         when (operator) {
             'A' -> {
                 val sum = MathOperation.addition(leftSide, rightSide)
                 binding.tvResult.text = sum.toString()
-                digitOnScreen.append(sum)
+                currentInput.append(sum)
             }
 
             'B' -> {
                 val subs = MathOperation.addition(leftSide, rightSide)
                 binding.tvResult.text = subs.toString()
-                digitOnScreen.append(subs)
+                currentInput.append(subs)
             }
 
             'C' -> {
                 val mulp = MathOperation.addition(leftSide, rightSide)
                 binding.tvResult.text = mulp.toString()
-                digitOnScreen.append(mulp)
+                currentInput.append(mulp)
             }
 
             'D' -> {
                 val div = MathOperation.addition(leftSide, rightSide)
                 binding.tvResult.text = div.toString()
-                digitOnScreen.append(div)
+                currentInput.append(div)
             }
         }
     }
