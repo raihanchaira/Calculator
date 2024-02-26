@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.example.calculator.databinding.ActivityMainBinding
 import com.example.calculator.helper.MathOperation
 import java.lang.StringBuilder
@@ -65,7 +66,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnEqual.setOnClickListener {
+            resetOperatorButtonBackground()
             mainOperation()
+        }
+    }
+
+    private fun resetOperatorButtonBackground() {
+        val operatorButtons = listOf(binding.btnPlus, binding.btnMinus, binding.btnMultiple, binding.btnDivided)
+        operatorButtons.forEach { button ->
+            button.setBackgroundColor(ContextCompat.getColor(this, R.color.original))
         }
     }
 
@@ -80,8 +89,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun selectOperation(sign : Char){
+    private fun selectOperation(sign: Char) {
         operator = sign
+
+        // Update the operator character
+        when (sign) {
+            '+' -> operator = 'A'
+            '-' -> operator = 'B'
+            '*' -> operator = 'C'
+            '/' -> operator = 'D'
+        }
+
         leftSide = currentInput.toString().toDouble()
         currentInput.clear()
         binding.tvResult.text = "0"
@@ -93,17 +111,19 @@ class MainActivity : AppCompatActivity() {
             binding.btnPlus to '+',
             binding.btnMinus to '-',
             binding.btnMultiple to '*',
-            binding.btnDivided to '*'
+            binding.btnDivided to '/'
         )
 
         mapOfOperator.forEach{ (button, to) ->
             button.setOnClickListener{
+                button.setBackgroundColor(ContextCompat.getColor(this, R.color.clicked))
                 selectOperation(to)
             }
         }
     }
 
     private fun mainOperation(){
+        Log.d("hasil", "right $rightSide, left $leftSide")
         rightSide = currentInput.toString().toDouble()
         currentInput.clear()
 
